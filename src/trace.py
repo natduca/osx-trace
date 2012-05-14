@@ -18,7 +18,9 @@ import os
 import platform
 import shlex
 import subprocess
+import sys
 import urllib2
+
 from exceptions import *
 
 class Trace(object):
@@ -32,8 +34,19 @@ class Trace(object):
     if not os.path.exists("/usr/bin/cc"):
       raise CompilerNeededException()
 
-    # look the result in build dir
+    # Compilation is needed if there is no cache file, or
+    # if the trace.py or trace.c.patch is more-recent than the executable.
+    compile_needed = False
     if not os.path.exists(os.path.join(cache_dir, "trace", "trace")):
+      compile_needed = True
+    else:
+      trace_mtime = os.stat(os.path.join(cache_dir, "trace", "trace")).st_mtime
+      trace_py_mtime = os.stat(os.path.join(cache_dir, "..", "src", "trace.py")).st_mtime
+      trace_c_patch_mtime = os.stat(os.path.join(cache_dir, "..", "src", "trace.c.patch")).st_mtime
+      compile_needed = trace_mtime < trace_py_mtime or trace_mtime < trace_c_patch_mtime
+
+    # Compile.
+    if compile_needed:
       self._download_and_compile(libutil, verbose)
       self.did_compile = True
     else:
@@ -81,6 +94,23 @@ class Trace(object):
     f.write(req.read())
     f.close()
     req.close()
+
+    # Apply trace.c.patch to the trace file
+    oldcwd = os.getcwd()
+    try:
+      sys.stderr.write("Patching trace helper...\n")
+      os.chdir(trace_path)
+      patch_file = os.path.join(self.cache_dir, "../", "src", "trace.c.patch")
+      args = ["/usr/bin/patch",
+              "-p1",
+              "-i", patch_file
+              ]
+      p = subprocess.Popen(args,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+      x = p.communicate()
+      assert p.returncode == 0
+
+    finally:
+      os.chdir(oldcwd)
 
     # Download trace.codes
     codes_url = "http://www.opensource.apple.com/source/xnu/xnu-1699.24.23/bsd/kern/trace.codes?txt"
@@ -143,7 +173,9 @@ class Trace(object):
     else:
       full_args = [self._executable]
     full_args.extend(args)
-    return subprocess.call(full_args)
+    p = subprocess.Popen(full_args,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    p.communicate()
+    return p.returncode
 #    print " ".join(full_args)
 #    return os.system(" ".join(full_args))
 

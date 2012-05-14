@@ -1,0 +1,51 @@
+--- trace_orig/trace.c	2012-05-14 01:25:28.000000000 -0700
++++ trace/trace.c	2012-05-14 02:13:58.000000000 -0700
+@@ -1017,7 +1017,7 @@
+ 			cpunum = kdbg_get_cpu(kdp); 
+ 			thread = kdp->arg5;
+ 
+-			if (lines == 64 || firsttime)
++			if (firsttime)
+ 			{
+ 				prevdelta = now - prevdelta;
+ 
+@@ -1036,9 +1036,9 @@
+ 				 */
+ 				fprintf(output_file,
+ #ifdef __LP64__
+-					"   AbsTime(Us)      Delta            debugid                       arg1             arg2             arg3             arg4              thread         cpu#  command\n\n"
++					"   AbsTime(Us)          Delta            debugid                       arg1             arg2             arg3             arg4              thread         cpu#  command\n\n"
+ #else
+-					"   AbsTime(Us)      Delta            debugid                       arg1           arg2           arg3           arg4                thread   cpu#  command\n\n"
++					"   AbsTime(Us)          Delta            debugid                       arg1           arg2           arg3           arg4                thread   cpu#  command\n\n"
+ #endif
+ 					);
+ 	    
+@@ -1118,7 +1118,7 @@
+ 			if (ending_event) {
+ 				char *ch;
+ 
+-				sprintf(&outbuf[0], "(%-10.1f)", event_elapsed_time);
++				sprintf(&outbuf[0], "(%-10.4f)", event_elapsed_time);
+ 				/*
+ 				 * fix that right paren
+ 				 */
+@@ -1146,14 +1146,14 @@
+ 			}
+ 			if (match_debugid(debugid_base, dbgmessge, &dmsgindex)) {
+ 				if (ending_event)
+-					fprintf(output_file, "%13.1f %10.1f%s %-28x  ", x, y, outbuf, debugid_base);
++					fprintf(output_file, "%16.4f %13.4f%s %-28x  ", x, y, outbuf, debugid_base);
+ 				else
+-					fprintf(output_file, "%13.1f %10.1f             %-28x  ", x, y, debugid_base);
++					fprintf(output_file, "%16.4f %13.4f             %-28x  ", x, y, debugid_base);
+ 			} else {
+ 				if (ending_event)
+-					fprintf(output_file, "%13.1f %10.1f%s %-28.28s  ", x, y, outbuf, dbgmessge);
++					fprintf(output_file, "%16.4f %13.4f%s %-28.28s  ", x, y, outbuf, dbgmessge);
+ 				else
+-					fprintf(output_file, "%13.1f %10.1f             %-28.28s  ", x, y, dbgmessge);
++					fprintf(output_file, "%16.4f %13.4f             %-28.28s  ", x, y, dbgmessge);
+ 			}
+ 			if (lkp) {
+ 				char *strptr;
