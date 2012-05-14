@@ -143,9 +143,9 @@ class Trace(object):
     else:
       full_args = [self._executable]
     full_args.extend(args)
-#    return subprocess.call(full_args)
-    print " ".join(full_args)
-    return os.system(" ".join(full_args))
+    return subprocess.call(full_args)
+#    print " ".join(full_args)
+#    return os.system(" ".join(full_args))
 
   @property
   def codes_file(self):
@@ -155,6 +155,6 @@ class Trace(object):
   def rawcall(self, args):
     """Passthrough to subprocess.call. osx_trace code calls through this
     so that testing can mock all real system interactions directly."""
-#    return subprocess.call(full_args)
-    print " ".join(args)
-    return os.system(" ".join(args))
+    return subprocess.call(args)
+#    print " ".join(args)
+#    return os.system(" ".join(args))
