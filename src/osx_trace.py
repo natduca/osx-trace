@@ -27,6 +27,11 @@ def create_trace_cmd(options):
   cache_dir = os.path.join(root, ".cache")
   if not os.path.exists(cache_dir):
     os.mkdir(cache_dir)
+
+  if not os.path.exists("/usr/bin/cc"):
+    sys.stderror.write("No compiler found. Install XCode and try again.\n")
+    sys.exit(255)
+
   u = libutil.LibUtil(cache_dir, verbose=True)
   return trace.Trace(u, cache_dir, verbose=True)
 
@@ -142,9 +147,9 @@ def main(parser):
       # Not a known command. Default to help.
       print "Unrecognized command: %s\n" % non_switch_args[0]
   else: # default command
-    CMDsearch.usage_more = ('\n\nCommands are:\n' + '\n'.join([
+    CMDrecord.usage_more = ('\n\nCommands are:\n' + '\n'.join([
           '  %-10s %s' % (fn[3:], getdoc(Command(fn[3:])).split('\n')[0].strip())
           for fn in dir(sys.modules[__name__]) if fn.startswith('CMD')]))
-    GenUsage(parser, 'search')
-    return CMDsearch(parser)
+    GenUsage(parser, 'record')
+    return CMDrecord(parser)
 
