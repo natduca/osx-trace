@@ -198,7 +198,8 @@ def main(parser):
     return 255
   else:
     r = IncrementalTestRunner(options)
-    message_loop.set_unittests_running(True)
+    if message_loop:
+      message_loop.set_unittests_running(True)
     ok = True
     for s in suites:
       if isinstance(s, unittest.TestSuite):
@@ -219,7 +220,8 @@ def main(parser):
           ok = False
           if options.stop_on_error:
             break
-    message_loop.set_unittests_running(False)
+    if message_loop:
+      message_loop.set_unittests_running(False)
     if ok:
       return 0
     return 255
