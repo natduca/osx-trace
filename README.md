@@ -7,6 +7,7 @@ the trace utility does not ship with OSX, and even when you have it, its not
 very obvious how to use it.
 
 This project downloads and compiles the OSX trace utility for you and wraps it
-so that it is obvious what to do. Just type:
-   ./osx-trace ---help
+so that it is stupid easy:
+    ./osx-trace record my_trace.trace
 
+Press control-C to finish recording.

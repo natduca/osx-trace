@@ -128,7 +128,7 @@ class Trace(object):
 
   @property
   def _executable(self):
-    return os.path.join(cache_dir, "trace", "trace")
+    return os.path.join(self.cache_dir, "trace", "trace")
 
   def system(self, cmd):
     args = shlex.split(cmd)
@@ -136,15 +136,25 @@ class Trace(object):
     p.communicate()
     return p.returncode
 
-  def call(self, sudo=False, *args):
+  def call(self, args, sudo=False):
     if sudo:
       full_args = ["/usr/bin/sudo",
                    self._executable]
     else:
-      full_args = [self.executable]
+      full_args = [self._executable]
     full_args.extend(args)
-    return subprocess.call(full_args)
+#    return subprocess.call(full_args)
+    print " ".join(full_args)
+    return os.system(" ".join(full_args))
 
-  def codes(self):
-    return os.path.join(cache_dir, "trace.codes")
+  @property
+  def codes_file(self):
+    return os.path.join(self.cache_dir, "trace.codes")
 
+
+  def rawcall(self, args):
+    """Passthrough to subprocess.call. osx_trace code calls through this
+    so that testing can mock all real system interactions directly."""
+#    return subprocess.call(full_args)
+    print " ".join(args)
+    return os.system(" ".join(args))

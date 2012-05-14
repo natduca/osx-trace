@@ -31,6 +31,8 @@ class TraceTest(unittest.TestCase):
     util = libutil.LibUtil(self.test_data_dir)
     trace1 = trace.Trace(util, self.test_data_dir)
     self.assertTrue(trace1.did_compile)
+    self.assertEquals(os.path.join(self.test_data_dir, "trace", "trace"), trace1._executable)
+    self.assertEquals(os.path.join(self.test_data_dir, "trace.codes"), trace1.codes_file)
 
   def test_start_warm(self):
     util = libutil.LibUtil(self.test_data_dir)
@@ -38,6 +40,28 @@ class TraceTest(unittest.TestCase):
     self.assertTrue(trace1.did_compile)
     trace2 = trace.Trace(util, self.test_data_dir)
     self.assertFalse(trace2.did_compile)
+
+  def test_call_mocked(self):
+    real_system = os.system
+    system_args = []
+    def mock_system(*args):
+      del system_args[:]
+      system_args.extend(args)
+      return 7
+    os.system = mock_system
+    try:
+      util = libutil.LibUtil(self.test_data_dir)
+      trace1 = trace.Trace(util, self.test_data_dir)
+      ret = trace1.call(["test"], sudo=False)
+      self.assertEquals(7, ret)
+      self.assertEquals("%s test" % trace1._executable, system_args[-1])
+
+      ret = trace1.call(["test"], sudo=True)
+      self.assertEquals("%s test" % trace1._executable, system_args[-1])
+      self.assertEquals(7, ret)
+    finally:
+      os.system = real_system
+
 
   def system(self, cmd):
     args = shlex.split(cmd)
