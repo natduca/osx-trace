@@ -32,8 +32,6 @@ class Trace(object):
     if not os.path.exists("/usr/bin/cc"):
       raise CompilerNeededException()
 
-    base = "/"
-
     # look the result in build dir
     if not os.path.exists(os.path.join(cache_dir, "trace", "trace")):
       self._download_and_compile(libutil, verbose)
@@ -128,14 +126,24 @@ class Trace(object):
     p.communicate()
     assert p.returncode == 0
 
+  @property
+  def _executable(self):
+    return os.path.join(cache_dir, "trace", "trace")
+
   def system(self, cmd):
     args = shlex.split(cmd)
     p = subprocess.Popen(args,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     p.communicate()
     return p.returncode
 
-  def executable(self):
-    return os.path.join(cache_dir, "trace", "trace")
+  def call(self, sudo=False, *args):
+    if sudo:
+      full_args = ["/usr/bin/sudo",
+                   self._executable]
+    else:
+      full_args = [self.executable]
+    full_args.extend(args)
+    return subprocess.call(full_args)
 
   def codes(self):
     return os.path.join(cache_dir, "trace.codes")
