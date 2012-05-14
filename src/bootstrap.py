@@ -30,8 +30,6 @@ def main(main_name):
   mod = __import__(main_name, {}, {}, True)
   import optparse
   parser = optparse.OptionParser(usage=mod.main_usage())
-  parser.add_option('--curses', action="store_true", dest="curses", help="Use curses UI")
-  parser.add_option('--objc', action="store_true", dest="objc", help="Enable objc support")
   parser.add_option(
       '-v', '--verbose', action='count', default=0,
       help='Increase verbosity level (repeat as needed)')
