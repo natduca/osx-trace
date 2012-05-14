@@ -8,6 +8,7 @@ very obvious how to use it.
 
 This project downloads and compiles the OSX trace utility for you and wraps it
 so that it is stupid easy:
+
     ./osx-trace record my_trace.trace
 
 Press control-C to finish recording.
