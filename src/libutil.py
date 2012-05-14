@@ -20,11 +20,11 @@ import urllib2
 from exceptions import *
 
 class LibUtil(object):
-  def __init__(self, build_dir, verbose=False):
+  def __init__(self, cache_dir, verbose=False):
     if not platform.platform().startswith("Darwin"):
       raise Exception("Only supported on OSX.")
 
-    self.build_dir = build_dir
+    self.cache_dir = cache_dir
 
     # Sanity check: are we on a platform we understand?
     if platform.mac_ver()[0].startswith('10.6'):
@@ -39,12 +39,12 @@ class LibUtil(object):
       raise CompilerNeededException()
 
     # look the result in build dir
-    if not os.path.exists(os.path.join(build_dir, "libutil-%s" % self.ver, "libutil1.0.dylib")):
+    if not os.path.exists(os.path.join(cache_dir, "libutil-%s" % self.ver, "libutil1.0.dylib")):
       self._download_and_compile(verbose)
       self.did_compile = True
     else:
       self.did_compile = False
-    assert os.path.exists(os.path.join(build_dir, "libutil-%s" % self.ver, "libutil1.0.dylib"))
+    assert os.path.exists(os.path.join(cache_dir, "libutil-%s" % self.ver, "libutil1.0.dylib"))
 
   def _download_and_compile(self, verbose=False):
     if verbose:
@@ -52,7 +52,7 @@ class LibUtil(object):
 
     # Download
     req = urllib2.urlopen('http://opensource.apple.com/tarballs/libutil/libutil-%s.tar.gz' % self.ver)
-    tarfilename = os.path.join(self.build_dir, 'libutil-%s.tar.gz' % self.ver)
+    tarfilename = os.path.join(self.cache_dir, 'libutil-%s.tar.gz' % self.ver)
     f = open(tarfilename, 'w')
     f.write(req.read())
     f.close()
@@ -74,7 +74,7 @@ class LibUtil(object):
     # Compile
     if verbose:
       print "Compiling libUtil..."
-    folder_name = os.path.join(self.build_dir, "libutil-%s" % self.ver)
+    folder_name = os.path.join(self.cache_dir, "libutil-%s" % self.ver)
     assert os.path.exists(os.path.join(folder_name, "Makefile"))
     oldcwd = os.getcwd()
     try:
@@ -91,8 +91,8 @@ class LibUtil(object):
 
   @property
   def include_path(self):
-    return os.path.join(self.build_dir, "libutil-%s" % self.ver)
+    return os.path.join(self.cache_dir, "libutil-%s" % self.ver)
 
   @property
   def link_path(self):
-    return os.path.join(self.build_dir, "libutil-%s" % self.ver)
+    return os.path.join(self.cache_dir, "libutil-%s" % self.ver)

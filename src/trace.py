@@ -22,11 +22,11 @@ import urllib2
 from exceptions import *
 
 class Trace(object):
-  def __init__(self, libutil, build_dir, verbose=False):
+  def __init__(self, libutil, cache_dir, verbose=False):
     if not platform.platform().startswith("Darwin"):
       raise Exception("Only supported on OSX.")
 
-    self.build_dir = build_dir
+    self.cache_dir = cache_dir
 
     # Sanity check: does cc exist?
     if not os.path.exists("/usr/bin/cc"):
@@ -35,13 +35,13 @@ class Trace(object):
     base = "/"
 
     # look the result in build dir
-    if not os.path.exists(os.path.join(build_dir, "trace", "trace")):
+    if not os.path.exists(os.path.join(cache_dir, "trace", "trace")):
       self._download_and_compile(libutil, verbose)
       self.did_compile = True
     else:
       self.did_compile = False
-    assert os.path.exists(os.path.join(build_dir, "trace", "trace"))
-    assert os.path.exists(os.path.join(build_dir, "trace.codes"))
+    assert os.path.exists(os.path.join(cache_dir, "trace", "trace"))
+    assert os.path.exists(os.path.join(cache_dir, "trace.codes"))
 
   def _download_and_compile(self, libutil, verbose=False):
 
@@ -50,13 +50,13 @@ class Trace(object):
 
     # Download trace file
     trace_c_url = "http://opensource.apple.com/source/system_cmds/system_cmds-541/trace.tproj/trace.c?txt"
-    trace_path = os.path.join(self.build_dir, "trace")
+    trace_path = os.path.join(self.cache_dir, "trace")
     if not os.path.exists(trace_path):
       os.mkdir(trace_path)
 
-    trace_c_file = os.path.join(self.build_dir, "trace", "trace.c")
-    trace_o_file = os.path.join(self.build_dir, "trace", "trace.o")
-    trace_executable_file = os.path.join(self.build_dir, "trace", "trace")
+    trace_c_file = os.path.join(self.cache_dir, "trace", "trace.c")
+    trace_o_file = os.path.join(self.cache_dir, "trace", "trace.o")
+    trace_executable_file = os.path.join(self.cache_dir, "trace", "trace")
 
     req = urllib2.urlopen(trace_c_url)
     f = open(trace_c_file, 'w')
@@ -72,8 +72,8 @@ class Trace(object):
       kdebug_h_url = "http://www.opensource.apple.com/source/xnu/xnu-1699.24.23/bsd/sys/kdebug.h?txt"
     else:
       raise Exception("Unrecognized OSX version: %s" % platform.mac_ver())
-    kdebug_h_path = os.path.join(self.build_dir, "kdebug", "sys")
-    kdebug_h_include_path = os.path.join(self.build_dir, "kdebug")
+    kdebug_h_path = os.path.join(self.cache_dir, "kdebug", "sys")
+    kdebug_h_include_path = os.path.join(self.cache_dir, "kdebug")
     if not os.path.exists(kdebug_h_path):
       os.makedirs(kdebug_h_path)
     kdebug_h_file = os.path.join(kdebug_h_path, "kdebug.h")
@@ -86,7 +86,7 @@ class Trace(object):
 
     # Download trace.codes
     codes_url = "http://www.opensource.apple.com/source/xnu/xnu-1699.24.23/bsd/kern/trace.codes?txt"
-    codes_file = os.path.join(self.build_dir, "trace.codes")
+    codes_file = os.path.join(self.cache_dir, "trace.codes")
     req = urllib2.urlopen(codes_url)
     f = open(codes_file, 'w')
     f.write(req.read())
@@ -135,8 +135,8 @@ class Trace(object):
     return p.returncode
 
   def executable(self):
-    return os.path.join(build_dir, "trace", "trace")
+    return os.path.join(cache_dir, "trace", "trace")
 
   def codes(self):
-    return os.path.join(build_dir, "trace.codes")
+    return os.path.join(cache_dir, "trace.codes")
 
