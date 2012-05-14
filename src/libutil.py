@@ -48,7 +48,7 @@ class LibUtil(object):
 
   def _download_and_compile(self, verbose=False):
     if verbose:
-      print "Downloading libUtil..."
+      sys.stderr.write("Downloading libUtil...\n")
 
     # Download
     req = urllib2.urlopen('http://opensource.apple.com/tarballs/libutil/libutil-%s.tar.gz' % self.ver)
@@ -60,7 +60,7 @@ class LibUtil(object):
 
     # Untar
     if verbose:
-      print "Extracting libUtil..."
+      sys.stderr.write("Extracting libUtil...\n")
 
     oldcwd = os.getcwd()
     try:
@@ -73,7 +73,7 @@ class LibUtil(object):
 
     # Compile
     if verbose:
-      print "Compiling libUtil..."
+      sys.stderr.write("Compiling libUtil...\n")
     folder_name = os.path.join(self.cache_dir, "libutil-%s" % self.ver)
     assert os.path.exists(os.path.join(folder_name, "Makefile"))
     oldcwd = os.getcwd()

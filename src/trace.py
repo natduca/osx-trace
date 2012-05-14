@@ -44,7 +44,7 @@ class Trace(object):
   def _download_and_compile(self, libutil, verbose=False):
 
     if verbose:
-      print "Downloading trace utility..."
+      sys.stderr.write("Downloading trace helper...\n")
 
     # Download trace file
     trace_c_url = "http://opensource.apple.com/source/system_cmds/system_cmds-541/trace.tproj/trace.c?txt"
@@ -93,7 +93,7 @@ class Trace(object):
 
     # Compile trace
     if verbose:
-      print "Compiling trace utility..."
+      sys.stderr.write("Compiling trace helper...\n")
 
     # cc
     args = ["/usr/bin/cc",
