@@ -72,7 +72,6 @@ def CMDrecord(parser):
     trace_cmd.rawcall(["/usr/bin/sudo", "chown", str(os.getuid()), args[0]])
     trace_cmd.rawcall(["/usr/bin/sudo", "chgrp", str(os.getgid()), args[0]])
 
-    print ret
     assert ret == 0
     sys.stderr.write("\n")
 
@@ -147,9 +146,9 @@ def main(parser):
       # Not a known command. Default to help.
       print "Unrecognized command: %s\n" % non_switch_args[0]
   else: # default command
-    CMDrecord.usage_more = ('\n\nCommands are:\n' + '\n'.join([
+    CMDhelp.usage_more = ('\n\nCommands are:\n' + '\n'.join([
           '  %-10s %s' % (fn[3:], getdoc(Command(fn[3:])).split('\n')[0].strip())
           for fn in dir(sys.modules[__name__]) if fn.startswith('CMD')]))
-    GenUsage(parser, 'record')
-    return CMDrecord(parser)
+    GenUsage(parser, 'help')
+    return CMDhelp(parser)
 
