@@ -16,6 +16,7 @@ import platform
 import shlex
 import subprocess
 import urllib2
+import sys
 
 from exceptions import *
 
